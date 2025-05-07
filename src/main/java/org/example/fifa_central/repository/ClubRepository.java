@@ -34,14 +34,23 @@ public class ClubRepository {
     }
 
         public List<ClubStatistic> getClubsStatistics() {
-            String sql = "SELECT cs.club_id, c.name AS club_name, c.acronym, c.year_creation, c.stadium, co.name AS coach_name, co.nationality AS coach_nationality, " +
-                    "cs.ranking_points, cs.scored_goals, cs.conceded_goals, cs.difference_goals," +
-                    " cs.clean_sheet_number " +
+//            String sql = "SELECT cs.club_id, c.name AS club_name, c.acronym, c.year_creation, c.stadium, co.name AS coach_name, co.nationality AS coach_nationality, " +
+//                    "cs.ranking_points, cs.scored_goals, cs.conceded_goals, cs.difference_goals," +
+//                    " cs.clean_sheet_number " +
+//                    "FROM club_statistics cs " +
+//                    "JOIN club c " +
+//                    "ON cs.club_id = c.id " +
+//                    "JOIN coach co ON c.coach_id = co.id " +
+//                    "ORDER BY cs.ranking_points DESC\n";
+
+            String sql = "SELECT cs.club_id, cl.name AS club_name, cl.acronym, cl.year_creation, cl.stadium, " +
+                    "co.name AS coach_name, co.nationality AS coach_nationality, " +
+                    "cs.ranking_points, cs.scored_goals, cs.conceded_goals, " +
+                    "cs.difference_goals, cs.clean_sheet_number " +
                     "FROM club_statistics cs " +
-                    "JOIN club c " +
-                    "ON cs.club_id = c.id " +
-                    "JOIN coach co ON c.coach_id = co.id " +
-                    "ORDER BY cs.ranking_points DESC\n";
+                    "JOIN clubs cl ON cs.club_id = cl.id " +
+                    "JOIN coaches co ON cl.coach_name = co.name " +
+                    "ORDER BY cs.ranking_points DESC";
             List<ClubStatistic> results = jdbc.query(sql, (rs, rowNum) -> {
                 Coach coach = new Coach();
                 coach.setName(rs.getString("coach_name"));
