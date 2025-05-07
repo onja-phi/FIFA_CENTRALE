@@ -1,5 +1,6 @@
 package org.example.fifa_central.repository;
 
+import org.example.fifa_central.dto.ClubStatisticDto;
 import org.example.fifa_central.model.Coach;
 import org.example.fifa_central.model.Player;
 import org.example.fifa_central.model.Club;
@@ -32,20 +33,23 @@ public class SynchronizationRepository {
         if (club == null) return;
 
         jdbcTemplate.update("""
-            INSERT INTO clubs (id, name, acronym, year_creation, stadium)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO clubs (id, name, acronym, year_creation, stadium, coach_name)
+            VALUES (?, ?, ?, ?, ?, ?)
             ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
             acronym = EXCLUDED.acronym,
             year_creation = EXCLUDED.year_creation,
-            stadium = EXCLUDED.stadium
+            stadium = EXCLUDED.stadium,
+            coach_name = EXCLUDED.coach_name
             """,
                 club.getId(),
                 club.getName(),
                 club.getAcronym(),
                 club.getYearCreation(),
-                club.getStadium()
+                club.getStadium(),
+                club.getCoach().getName()
         );
+        saveCoachData(club.getCoach());
     }
 
 
@@ -76,6 +80,47 @@ public class SynchronizationRepository {
                 coachName
         );
     }
+
+    public void saveClubStatisticsData(ClubStatisticDto dto) {
+        if (dto == null) return;
+
+        jdbcTemplate.update("""
+        INSERT INTO club_statistics (
+            club_id,
+            ranking_points,
+            scored_goals,
+            conceded_goals,
+            difference_goals,
+            clean_sheet_number,
+            year_creation,
+            stadium,
+            coach_name,
+            coach_nationality
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (club_id) DO UPDATE SET
+            ranking_points = EXCLUDED.ranking_points,
+            scored_goals = EXCLUDED.scored_goals,
+            conceded_goals = EXCLUDED.conceded_goals,
+            difference_goals = EXCLUDED.difference_goals,
+            clean_sheet_number = EXCLUDED.clean_sheet_number,
+            year_creation = EXCLUDED.year_creation,
+            stadium = EXCLUDED.stadium,
+            coach_name = EXCLUDED.coach_name,
+            coach_nationality = EXCLUDED.coach_nationality
+        """,
+                dto.getId(),
+                dto.getRankingPoints(),
+                dto.getScoredGoals(),
+                dto.getConcededGoals(),
+                dto.getDifferenceGoals(),
+                dto.getCleanSheetNumber(),
+                dto.getYearCreation(),
+                dto.getStadium(),
+                dto.getCoach().getName(),
+                dto.getCoach().getNationality()
+        );
+    }
+
 
 
 
