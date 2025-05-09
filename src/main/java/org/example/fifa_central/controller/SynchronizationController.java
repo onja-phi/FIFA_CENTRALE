@@ -1,6 +1,5 @@
 package org.example.fifa_central.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.example.fifa_central.service.SynchronizationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
